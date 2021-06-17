@@ -1,4 +1,28 @@
 import axios from 'axios';
+
+window.onload = function () {
+    let test = id("register");
+    console.log(test);
+    let test1 = id("login");
+    console.log(test1);
+    console.log(typeof(test));
+}
+/////////////////////////////////////////////////////
+console.log(id("login"));
+if(id("login")) {
+    id("login").addEventListener("click",login);
+}
+
+if(id("register")) {
+    id("register").addEventListener("click",register);
+}
+
+if(id("logout")) {
+    id("logout").addEventListener("click",logout);
+}
+
+
+//////////////////////////////////////////////////////
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -46,6 +70,8 @@ function register() {
     const username = document.getElementById('inputUsername').value.trim();
     const password = document.getElementById('inputPassword').value;
 
+    console.log("register fn called");
+
     if (registerFieldsAreValid(firstName, lastName, email, username, password)) {
         displayInfoToast("Please wait...");
 
@@ -56,15 +82,19 @@ function register() {
             password: password
         }
 
+        console.log(dataForApiRequest);
+
         axios({
             url: API_BASE_URL + 'auth/register/',
             method: 'post',
             data: dataForApiRequest,
         }).then(function({data, status}) {
           localStorage.setItem('token', data.token);
+          console.log(data.token);
           window.location.href = '/';
         }).catch(function(err) {
           displayErrorToast('An account using same email or username is already created');
+          console.log(err);
         })
     }
 }
@@ -75,6 +105,33 @@ function login() {
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+        
+    let usrname = id("inputUsername").value.trim();
+    let pass = id("inputPassword").value.trim();
+     console.log("login fn called");
+    if(usrname!=null && pass!=null) {
+        console.log(usrname);
+        console.log(pass);
+
+        let dataForApiRequest = {
+            username: usrname,
+            password: pass
+        }
+        
+        axios({
+            url: API_BASE_URL + 'auth/login/',
+            method: 'post',
+            data: dataForApiRequest,
+        }).then(function({data, status}) {
+          localStorage.setItem('token', data.token);
+          console.log(data.token);
+          window.location.href = '/';
+        }).catch(function(err) {
+          displayErrorToast('something went wromg');
+          console.log(err);
+        })
+    }
+ 
 }
 
 function addTask() {
@@ -106,4 +163,10 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+}
+
+//////////////////// ********************************** \\\\\\\\\\\\\\\\\\\\\\\\\\
+
+function id(string) {
+    return document.getElementById(string);
 }
