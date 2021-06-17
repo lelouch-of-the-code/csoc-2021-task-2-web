@@ -40,11 +40,11 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
 }
 
 function register() {
-    const firstName = document.getElementById('inputFirstName').value.trim();
-    const lastName = document.getElementById('inputLastName').value.trim();
-    const email = document.getElementById('inputEmail').value.trim();
-    const username = document.getElementById('inputUsername').value.trim();
-    const password = document.getElementById('inputPassword').value;
+    const firstName = id('inputFirstName').value.trim();
+    const lastName = id('inputLastName').value.trim();
+    const email = id('inputEmail').value.trim();
+    const username = id('inputUsername').value.trim();
+    const password = id('inputPassword').value;
 
     if (registerFieldsAreValid(firstName, lastName, email, username, password)) {
         displayInfoToast("Please wait...");
@@ -86,10 +86,10 @@ function addTask() {
 }
 
 function editTask(id) {
-    document.getElementById('task-' + id).classList.add('hideme');
-    document.getElementById('task-actions-' + id).classList.add('hideme');
-    document.getElementById('input-button-' + id).classList.remove('hideme');
-    document.getElementById('done-button-' + id).classList.remove('hideme');
+    id('task-' + id).classList.add('hideme');
+    id('task-actions-' + id).classList.add('hideme');
+    id('input-button-' + id).classList.remove('hideme');
+    id('done-button-' + id).classList.remove('hideme');
 }
 
 function deleteTask(id) {
@@ -106,4 +106,10 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function id(id) {
+    return document.getElementById(id);
 }
