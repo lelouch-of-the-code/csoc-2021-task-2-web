@@ -6,6 +6,8 @@ window.onload = function () {
     let test1 = id("login");
     console.log(test1);
     console.log(typeof(test));
+    let addT = id("add");
+    console.log(addT);
 }
 /////////////////////////////////////////////////////
 console.log(id("login"));
@@ -20,6 +22,12 @@ if(id("register")) {
 if(id("logout")) {
     id("logout").addEventListener("click",logout);
 }
+
+if(id("addTask")) {
+    id("addTask").addEventListener("click",addTask);
+}
+
+
 
 
 //////////////////////////////////////////////////////
@@ -110,6 +118,7 @@ function login() {
     let pass = id("inputPassword").value.trim();
      console.log("login fn called");
     if(usrname!=null && pass!=null) {
+        displayInfoToast("loading");
         console.log(usrname);
         console.log(pass);
 
@@ -134,35 +143,165 @@ function login() {
  
 }
 
-function addTask() {
+let num = 0;
+
+export function addTask() {
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
+    console.log(num);
+    num ++;
+    displayInfoToast("loading");
+    axios({
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'todo/create/',
+        method: 'post',
+        data: {
+            title: id("add").value.trim()
+        },
+    }).then(function({data, status}) {
+        axios({
+            headers: {
+                Authorization: "Token " + localStorage.getItem("token")
+            },
+            url: API_BASE_URL + "todo/",
+            method: "get"
+        }).then(function ({ data, status }) {
+            console.log(data);
+            const latest = data[data.length - 1];
+            displayTask(latest);
+            console.log(latest);
+            displaySuccessToast("done!");
+        });
+    }).catch(function(err) {
+        console.log(err);
+    })
+
+    id("add").value = "";
+    
 }
 
-function editTask(id) {
-    document.getElementById('task-' + id).classList.add('hideme');
-    document.getElementById('task-actions-' + id).classList.add('hideme');
-    document.getElementById('input-button-' + id).classList.remove('hideme');
-    document.getElementById('done-button-' + id).classList.remove('hideme');
+
+
+export function displayTask(task) {
+    let display = document.createElement("li");
+    display.className = "list-group-item d-flex justify-content-between align-items-center";
+    display.innerHTML = `
+    <input id="input-button-${task.id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
+    <div id="done-button-${task.id}"  class="input-group-append hideme">
+        <button class="btn btn-outline-secondary todo-update-task" type="button" id="update-${task.id}">Done</button>
+    </div>
+    <div id="task-${task.id}" class="todo-task">
+        ${task.title}
+    </div>
+
+    <span id="task-actions-${task.id}">
+        <button style="margin-right:5px;" type="button" id="edit-${task.id}"
+            class="btn btn-outline-warning">
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
+                width="18px" height="20px">
+        </button>
+        <button type="button" class="btn btn-outline-danger" id="delete-${task.id}">
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
+                width="18px" height="22px">
+        </button>
+    </span>`;
+    id("tasklist").appendChild(display);
+    id("delete-" + task.id).addEventListener("click",function(){
+        deleteTask(task.id);
+    });
+    id("edit-" + task.id).addEventListener("click",function(){
+        editTask(task.id);
+    });
+    id("update-" + task.id).addEventListener("click",function(){
+        updateTask(task.id);
+    });
 }
 
-function deleteTask(id) {
+
+export function editTask(i) {
+    id('task-' + i).classList.add('hideme');
+    id('task-actions-' + i).classList.add('hideme');
+    id('input-button-' + i).classList.remove('hideme');
+    id('done-button-' + i).classList.remove('hideme');
+    console.log(i);
+    console.log("editee");
+}
+
+export function deleteTask(i) {
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+
+    console.log("deleteee")
+    console.log(id("task-" + i));
+    axios({
+        url: API_BASE_URL + 'todo/'+i+'/',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        method: 'delete',
+
+    }).then(function({data, status}) {
+        let item = document.getElementById("input-button-"+i);
+        let listItem = item.parentElement;
+        listItem.parentNode.removeChild(listItem);
+        // id("input-button-" + i).remove();
+        // id("delete-" + i).remove();
+        // id("edit-" + i).remove();
+        // id("done-button-" + i).remove();
+        // id("task-actions-" + i).remove();
+        // id("task-" + i).remove();
+    }).catch(function(err) {
+      displayErrorToast("something went wrong");
+      console.log(err);
+    })
 }
 
-function updateTask(id) {
+export function updateTask(i) {
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+
+
+    if(id("input-button-" + i).value.trim()) {
+        axios({
+            url: API_BASE_URL + 'todo/'+i+'/',
+            headers: {
+                Authorization: 'Token ' + localStorage.getItem('token'),
+            },
+            method: "patch",
+            data: {
+                id: i,
+                title: id("input-button-" + i).value.trim(),
+            }
+    
+        }).then(function({data, status}) {
+            id("task-"+ i).innerHTML = id("input-button-" + i).value.trim();
+            id("input-button-" + i).value = "";
+            displaySuccessToast("done");
+        }).catch(function(err) {
+            displayErrorToast("something went wrong");
+        })
+    } else {
+        displayErrorToast("no title entered");
+    }
+
+
+
+    id('task-' + i).classList.remove('hideme');
+    id('task-actions-' + i).classList.remove('hideme');
+    id('input-button-' + i).classList.add('hideme');
+    id('done-button-' + i).classList.add('hideme');
+    
 }
 
 //////////////////// ********************************** \\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -170,3 +309,5 @@ function updateTask(id) {
 function id(string) {
     return document.getElementById(string);
 }
+
+
