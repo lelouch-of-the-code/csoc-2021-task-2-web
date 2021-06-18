@@ -72,11 +72,11 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
 }
 
 function register() {
-    const firstName = document.getElementById('inputFirstName').value.trim();
-    const lastName = document.getElementById('inputLastName').value.trim();
-    const email = document.getElementById('inputEmail').value.trim();
-    const username = document.getElementById('inputUsername').value.trim();
-    const password = document.getElementById('inputPassword').value;
+    const firstName = id('inputFirstName').value.trim();
+    const lastName = id('inputLastName').value.trim();
+    const email = id('inputEmail').value.trim();
+    const username = id('inputUsername').value.trim();
+    const password = id('inputPassword').value;
 
     console.log("register fn called");
 
@@ -101,7 +101,7 @@ function register() {
           console.log(data.token);
           window.location.href = '/';
         }).catch(function(err) {
-          displayErrorToast('An account using same email or username is already created');
+          displayErrorToast('something went wrong');
           console.log(err);
         })
     }
@@ -153,13 +153,22 @@ export function addTask() {
      */
     console.log(num);
     num ++;
+    console.log(num);
+
+    console.log(id("add").value);
+
+    if(!id("add").value || id("add").value == "") {
+        displayErrorToast("empty title");
+        return;
+    }
+
     displayInfoToast("loading");
     axios({
         headers: {
-            Authorization: 'Token ' + localStorage.getItem('token'),
+            Authorization: "Token " + localStorage.getItem("token"),
         },
-        url: API_BASE_URL + 'todo/create/',
-        method: 'post',
+        url: API_BASE_URL + "todo/create/",
+        method: "post",
         data: {
             title: id("add").value.trim()
         },
@@ -178,6 +187,7 @@ export function addTask() {
             displaySuccessToast("done!");
         });
     }).catch(function(err) {
+        displayErrorToast("something went wrong")
         console.log(err);
     })
 
@@ -190,6 +200,7 @@ export function addTask() {
 export function displayTask(task) {
     let display = document.createElement("li");
     display.className = "list-group-item d-flex justify-content-between align-items-center";
+    display.id = "display-" + task.id;
     display.innerHTML = `
     <input id="input-button-${task.id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
     <div id="done-button-${task.id}"  class="input-group-append hideme">
@@ -242,16 +253,17 @@ export function deleteTask(i) {
     console.log("deleteee")
     console.log(id("task-" + i));
     axios({
-        url: API_BASE_URL + 'todo/'+i+'/',
+        url: API_BASE_URL + "todo/"+i+"/",
         headers: {
-            Authorization: 'Token ' + localStorage.getItem('token'),
+            Authorization: "Token " + localStorage.getItem("token"),
         },
-        method: 'delete',
+        method: "delete",
 
     }).then(function({data, status}) {
-        let item = document.getElementById("input-button-"+i);
-        let listItem = item.parentElement;
-        listItem.parentNode.removeChild(listItem);
+        
+        let toBeDel = id("display-" + i);
+        toBeDel.parentNode.removeChild(toBeDel);
+
         // id("input-button-" + i).remove();
         // id("delete-" + i).remove();
         // id("edit-" + i).remove();
@@ -274,9 +286,9 @@ export function updateTask(i) {
 
     if(id("input-button-" + i).value.trim()) {
         axios({
-            url: API_BASE_URL + 'todo/'+i+'/',
+            url: API_BASE_URL + "todo/"+i+"/",
             headers: {
-                Authorization: 'Token ' + localStorage.getItem('token'),
+                Authorization: "Token " + localStorage.getItem("token"),
             },
             method: "patch",
             data: {
