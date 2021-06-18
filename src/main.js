@@ -1,14 +1,5 @@
 import axios from 'axios';
 
-window.onload = function () {
-    let test = id("register");
-    console.log(test);
-    let test1 = id("login");
-    console.log(test1);
-    console.log(typeof(test));
-    let addT = id("add");
-    console.log(addT);
-}
 /////////////////////////////////////////////////////
 console.log(id("login"));
 if(id("login")) {
