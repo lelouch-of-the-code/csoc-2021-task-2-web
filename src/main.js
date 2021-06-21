@@ -1,7 +1,10 @@
+
+/// USERNAME : BlackFlames
+/// PASSWORD : amaterasu
+
 import axios from 'axios';
 
 /////////////////////////////////////////////////////
-console.log(id("login"));
 if(id("login")) {
     id("login").addEventListener("click",login);
 }
@@ -69,8 +72,6 @@ function register() {
     const username = id('inputUsername').value.trim();
     const password = id('inputPassword').value;
 
-    console.log("register fn called");
-
     if (registerFieldsAreValid(firstName, lastName, email, username, password)) {
         displayInfoToast("Please wait...");
 
@@ -81,7 +82,6 @@ function register() {
             password: password
         }
 
-        console.log(dataForApiRequest);
 
         axios({
             url: API_BASE_URL + 'auth/register/',
@@ -89,11 +89,9 @@ function register() {
             data: dataForApiRequest,
         }).then(function({data, status}) {
           localStorage.setItem('token', data.token);
-          console.log(data.token);
           window.location.href = '/';
         }).catch(function(err) {
           displayErrorToast('something went wrong');
-          console.log(err);
         })
     }
 }
@@ -107,12 +105,8 @@ function login() {
         
     let usrname = id("inputUsername").value.trim();
     let pass = id("inputPassword").value.trim();
-     console.log("login fn called");
     if(usrname!=null && pass!=null) {
         displayInfoToast("loading");
-        console.log(usrname);
-        console.log(pass);
-
         let dataForApiRequest = {
             username: usrname,
             password: pass
@@ -124,17 +118,13 @@ function login() {
             data: dataForApiRequest,
         }).then(function({data, status}) {
           localStorage.setItem('token', data.token);
-          console.log(data.token);
           window.location.href = '/';
         }).catch(function(err) {
           displayErrorToast('something went wromg');
-          console.log(err);
         })
     }
  
 }
-
-let num = 0;
 
 export function addTask() {
     /**
@@ -142,14 +132,9 @@ export function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
-    console.log(num);
-    num ++;
-    console.log(num);
-
-    console.log(id("add").value);
 
     if(!id("add").value || id("add").value == "") {
-        displayErrorToast("empty title");
+        //displayErrorToast("empty title");
         return;
     }
 
@@ -171,15 +156,15 @@ export function addTask() {
             url: API_BASE_URL + "todo/",
             method: "get"
         }).then(function ({ data, status }) {
-            console.log(data);
+
             const latest = data[data.length - 1];
             displayTask(latest);
-            console.log(latest);
+    
             displaySuccessToast("done!");
         });
     }).catch(function(err) {
         displayErrorToast("something went wrong")
-        console.log(err);
+        
     })
 
     id("add").value = "";
@@ -230,8 +215,7 @@ export function editTask(i) {
     id('task-actions-' + i).classList.add('hideme');
     id('input-button-' + i).classList.remove('hideme');
     id('done-button-' + i).classList.remove('hideme');
-    console.log(i);
-    console.log("editee");
+  
 }
 
 export function deleteTask(i) {
@@ -241,8 +225,7 @@ export function deleteTask(i) {
      * @todo 2. Remove the task from the dom.
      */
 
-    console.log("deleteee")
-    console.log(id("task-" + i));
+  
     axios({
         url: API_BASE_URL + "todo/"+i+"/",
         headers: {
@@ -263,7 +246,7 @@ export function deleteTask(i) {
         // id("task-" + i).remove();
     }).catch(function(err) {
       displayErrorToast("something went wrong");
-      console.log(err);
+     
     })
 }
 
